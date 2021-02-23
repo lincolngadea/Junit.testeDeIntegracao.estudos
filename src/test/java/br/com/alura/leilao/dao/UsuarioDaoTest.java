@@ -3,21 +3,14 @@ package br.com.alura.leilao.dao;
 import br.com.alura.leilao.model.Usuario;
 import br.com.alura.leilao.util.JPAUtil;
 import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.EntityManager;
-
-import static org.junit.jupiter.api.Assertions.*;
+import javax.persistence.NoResultException;
 
 class UsuarioDaoTest {
 
     private UsuarioDao dao;
-
-
-    @BeforeEach
-    void setUp() {
-    }
 
     @Test
     void deveEncontrarUsuarioCadastrado() {
@@ -25,7 +18,9 @@ class UsuarioDaoTest {
         this.dao = new UsuarioDao(em);
 
         Usuario usuario = new Usuario("Fulano", "fulano@email.com","12345678");
+
         em.getTransaction().begin();
+        em.createQuery("DELETE FROM Usuario").executeUpdate();
         em.persist(usuario);
         em.getTransaction().commit();
 
@@ -35,5 +30,16 @@ class UsuarioDaoTest {
 
     @Test
     void naoDeveEncontrarUsuarioCadastrado() {
+        EntityManager em = JPAUtil.getEntityManager();
+        this.dao = new UsuarioDao(em);
+
+        Usuario usuario = new Usuario("Fulano", "fulano@email.com","12345678");
+        em.getTransaction().begin();
+        em.createQuery("DELETE FROM Usuario").executeUpdate();
+        em.persist(usuario);
+        em.getTransaction().commit();
+
+        Assert.assertThrows(NoResultException.class,
+                ()-> this.dao.buscarPorUsername("Beltrano"));
     }
 }
