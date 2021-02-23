@@ -42,6 +42,23 @@ class LeilaoDaoTest {
         Assert.assertNotNull(salvo);
     }
 
+    @Test
+    void deveAtualizarUmLeilao(){
+        Usuario usuario = criarUsuario();
+        Leilao leilao = new Leilao("Mochila", new BigDecimal("70"), LocalDate.now(), usuario);
+
+        leilao = dao.salvar(leilao);
+
+        leilao.setNome("Celular");
+        leilao.setValorInicial(new BigDecimal("400"));
+
+        leilao = dao.salvar(leilao);
+
+        Leilao salvo = dao.buscarPorId(leilao.getId());
+        Assert.assertEquals("Celular",salvo.getNome());
+        Assert.assertEquals(new BigDecimal("400"), salvo.getValorInicial());
+    }
+
     private Usuario criarUsuario(){
         Usuario usuario = new Usuario("Fulano", "fulano@email.com","12345678");
         em.persist(usuario);
